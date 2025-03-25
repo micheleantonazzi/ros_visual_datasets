@@ -27,11 +27,10 @@ To fix this issue run `sudo chmod a+rwx <folder>`.
 
 ### Scannet
 
-_(For now, only the Nyu40 labels code is supported. To use the Nyu13, you have to modify the scripts used below.)_
 At first request the official script to download Scannet [here](https://github.com/ScanNet/ScanNet/tree/master) and copy it inside a python file in  [datasets_setup_scripts/scannet/official_download_script.py](./datasets_setup_scripts/scannet/official_download_script.py)`
 
 * Select the directory in which you want to download the dataset with and setup an environment variable typing `export DATA_ROOT=~/myfiles/scannet`
 * Download the labels with `python3 datasets_setup_scripts/scannet/official_download_script.py --label_map -o ${DATA_ROOT}`
 * Download the data of the scenes you are interested. To do this, modify the script [download_scenes.py](./datasets_setup_scripts/scannet/download_scenes.py) changing the `scenes` and then run `python3 datasets_setup_scripts/scannet/download_scenes.py`.
 * Extract all the sensor data for each of the downloaded scenes. To do this, modify the `scene` variable inside the file [extract_data.py](./datasets_setup_scripts/scannet/extract_data.py) and the run `python3 datasets_setup_scripts/scannet/extract_data.py`. After the extraction, the `.sens` file is removed for space saving. You can disable this changing a bool inside the script.
-* Convert the labels to the Nyu40 encoding using the following command `python3 datasets_setup_scripts/scannet/scannet_preprocessing.py --scaled_image --labels_format nyu40` (`nyu13` if you want to change the labels format). This scripts generated the image with the semantic labels and the semantic colors.
+* Convert the labels to the Nyu40 or Nyu13 encoding using the following command `python3 datasets_setup_scripts/scannet/scannet_preprocessing.py --scaled_image --labels_format nyu40` (`nyu13` if you want to change the labels format). This scripts generated the image with the semantic labels and the semantic colors.
