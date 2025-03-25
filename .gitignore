@@ -49,3 +49,4 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+datasets_download_scripts/scannet/official_download_script.py
