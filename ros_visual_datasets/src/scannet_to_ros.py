@@ -121,32 +121,7 @@ def publish_all_topics(frequency, scene_id, first_message_number, scannet_folder
 
     bridge = CvBridge()
     files = os.listdir(os.path.join(scannet_folder, 'scans', scene_id, 'color'))
-    transform_broadcaster = tf2_ros.TransformBroadcaster()
-
-    # Publish static transforms for camera_color_link and camera_depth_link
-    static_transform_broadcaster = tf2_ros.StaticTransformBroadcaster()
-    #Depth
-    transform_camera_depth_message = TransformStamped()
-    #transform_camera_depth_message.header.stamp = rospy.Time.now()
-    transform_camera_depth_message.header.frame_id = '/camera_link'
-    transform_camera_depth_message.child_frame_id = '/camera_depth_link'
-    transform_camera_depth_message.transform.rotation.x = 0
-    transform_camera_depth_message.transform.rotation.y = 0
-    transform_camera_depth_message.transform.rotation.z = 0
-    transform_camera_depth_message.transform.rotation.w = 1
-    # Color
-    static_transform_broadcaster.sendTransform(transform_camera_depth_message)
-    transform_camera_color_message = TransformStamped()
-    #transform_camera_color_message.header.stamp = rospy.Time.now()
-    transform_camera_color_message.header.frame_id = '/camera_link'
-    transform_camera_color_message.child_frame_id = '/camera_color_link'
-    transform_camera_color_message.transform.rotation.x = 0
-    transform_camera_color_message.transform.rotation.y = 0
-    transform_camera_color_message.transform.rotation.z = 0
-    transform_camera_color_message.transform.rotation.w = 1
-    
-    #static_transform_broadcaster.sendTransform(transform_camera_color_message)
-
+    transform_broadcaster = tf2_ros.TransformBroadcaster()    
 
     # Define camera info message
     [H_unscaled_color, W_unscaled_color] = cv2.imread(os.path.join(scannet_folder, 'scans', scene_id, 'color', f'0.jpg')).shape[0:2]
@@ -191,7 +166,27 @@ def publish_all_topics(frequency, scene_id, first_message_number, scannet_folder
             camera_info_depth_message.P = K_depth[:3, :4].flatten()
             camera_info_depth_message.distortion_model = "plumb_bob"
             camera_info_depth_message.header.frame_id = '/camera_depth_link'
+
+            #Depth
+            transform_camera_depth_message = TransformStamped()
+            transform_camera_depth_message.header.stamp = rospy.Time.now()
+            transform_camera_depth_message.header.frame_id = '/camera_link'
+            transform_camera_depth_message.child_frame_id = '/camera_depth_link'
+            transform_camera_depth_message.transform.rotation.x = 0
+            transform_camera_depth_message.transform.rotation.y = 0
+            transform_camera_depth_message.transform.rotation.z = 0
+            transform_camera_depth_message.transform.rotation.w = 1
             
+            # Color
+            transform_camera_color_message = TransformStamped()
+            transform_camera_color_message.header.stamp = rospy.Time.now()
+            transform_camera_color_message.header.frame_id = '/camera_link'
+            transform_camera_color_message.child_frame_id = '/camera_color_link'
+            transform_camera_color_message.transform.rotation.x = 0
+            transform_camera_color_message.transform.rotation.y = 0
+            transform_camera_color_message.transform.rotation.z = 0
+            transform_camera_color_message.transform.rotation.w = 1
+                        
             # Load pose
             pose_matrix = read_pose_file(os.path.join(scannet_folder, 'scans', scene_id, 'pose', f'{num}.txt'))
             camera_transform_message = TransformStamped() 
@@ -212,6 +207,7 @@ def publish_all_topics(frequency, scene_id, first_message_number, scannet_folder
             image_raw = cv2.imread(os.path.join(scannet_folder, 'scans', scene_id, 'color', f'{num}.jpg'))
             image_message_header = Header()
             image_message_header.stamp = current_time
+            image_message_header.frame_id = num
             image_message_header.frame_id = 'camera_rgb_link'
             image_raw = scale_image(image=image_raw, W=W_depth, H=H_depth)
             image_message = bridge.cv2_to_imgmsg(image_raw, encoding='bgr8', header=image_message_header)
@@ -220,6 +216,7 @@ def publish_all_topics(frequency, scene_id, first_message_number, scannet_folder
             depth_raw = cv2.imread(os.path.join(scannet_folder, 'scans', scene_id, 'depth', f'{num}.png'), cv2.IMREAD_UNCHANGED).astype(np.float32)
             depth_raw = scale_image(image=depth_raw, W=W_depth, H=H_depth)
             image_depth_message_header = Header()
+            image_depth_message_header.frame_id = num
             image_depth_message_header.stamp = current_time
             image_depth_message_header.frame_id = 'camera_depth_link'
             image_depth_message = bridge.cv2_to_imgmsg(depth_raw.astype(np.uint16), encoding='16UC1', header=image_depth_message_header)
@@ -230,15 +227,20 @@ def publish_all_topics(frequency, scene_id, first_message_number, scannet_folder
             
             image_semantic_colored = image_semantic_colored.astype(np.uint8)
             image_semantic_message_header = Header()
+            image_semantic_message_header.frame_id = num
             image_semantic_message_header.stamp = current_time
             image_semantic_message_header.frame_id = 'camera_semantic_link'
             image_semantic_message_colored = bridge.cv2_to_imgmsg(image_semantic_colored, encoding="rgb8", header=image_semantic_message_header)
             image_semantic_message_header = Header()
+            image_semantic_message_header.frame_id = num
             image_semantic_message_header.stamp = current_time
             image_semantic_message_header.frame_id = 'camera_semantic_link'
             image_semantic_message = bridge.cv2_to_imgmsg(image_semantic, header=image_semantic_message_header)
+            
             # Publish all topics
             transform_broadcaster.sendTransform(camera_transform_message)
+            transform_broadcaster.sendTransform(transform_camera_color_message)
+            transform_broadcaster.sendTransform(transform_camera_depth_message)
             publisher_image.publish(image_message)
             publisher_camera_color_info.publish(camera_info_color_message)
             publisher_image_depth.publish(image_depth_message)
