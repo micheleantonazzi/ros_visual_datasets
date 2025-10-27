@@ -34,3 +34,10 @@ At first request the official script to download Scannet [here](https://github.c
 * Download the data of the scenes you are interested. To do this, modify the script [download_scenes.py](./datasets_setup_scripts/scannet/download_scenes.py) changing the `scenes` and then run `python3 datasets_setup_scripts/scannet/download_scenes.py`.
 * Extract all the sensor data for each of the downloaded scenes. To do this, modify the `scene` variable inside the file [extract_data.py](./datasets_setup_scripts/scannet/extract_data.py) and the run `python3 datasets_setup_scripts/scannet/extract_data.py`. After the extraction, the `.sens` file is removed for space saving. You can disable this changing a bool inside the script.
 * Convert the labels to the Nyu40 or Nyu13 encoding using the following command `python3 datasets_setup_scripts/scannet/scannet_preprocess.py --labels_format nyu40` (`nyu13` if you want to change the labels format). This scripts generated the image with the semantic labels and the semantic colors.
+
+### Scannetpp
+* Prepare a Python 3.10 virtual environment
+* Install the requirements by typing `pip3 install -r datasets_setup_scripts/scannetpp/toolkit/requirements.txt`
+* Install pytorch3d typing `pip install --no-index --no-cache-dir pytorch3d -f https://dl.fbaipublicfiles.com/pytorch3d/packaging/wheels/py310_cu116_pyt1131/download.html`
+* Install additional requirements  `pip3 install omegaconf hydra-core wandb codetiming`
+* Modify the configurations inside `/home/antonazzi/myfiles/repositories/ros_visual_datasets/datasets_setup_scripts/scannetpp/toolkit/semantic/configs/rasterize.yaml`
