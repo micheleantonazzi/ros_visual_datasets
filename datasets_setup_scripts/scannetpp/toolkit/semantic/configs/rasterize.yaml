@@ -1,0 +1,26 @@
+# release data downloaded to disk
+data_root: /media/antonazzi/44eb7d59-ea60-4984-ad3f-86b3e484082d/scannetpp/data/
+scene_list_file: /home/antonazzi/myfiles/repositories/ros_visual_datasets/datasets_setup_scripts/scannetpp/scenes.txt
+
+filter_scenes: []
+
+# image type - iphone or dslr
+image_type: dslr
+
+no_log: true
+
+# subsample images 
+subsample_factor: 1
+# downsample images and rasterize
+image_downsample_factor: null
+
+rasterout_dir: /media/antonazzi/44eb7d59-ea60-4984-ad3f-86b3e484082d/scannetpp/raster
+
+limit_images: None
+
+wandb_group: null
+wandb_notes: null
+
+batch_size: 4
+limit_batches: null
+skip_existing: false
