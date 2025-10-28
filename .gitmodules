@@ -1,3 +1,0 @@
-[submodule "datasets_setup_scripts/scannetpp/toolkit"]
-	path = datasets_setup_scripts/scannetpp/toolkit
-	url = https://github.com/scannetpp/scannetpp.git
